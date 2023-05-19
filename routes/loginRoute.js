@@ -30,7 +30,7 @@ loginRoute.post('/',async (req,res)=>{
     res.cookie("refreshToken",refreshToken,{httpOnly:true,expires:new Date(Date.now()+7*24*60*60*1000)})
 
     user.refreshToken = refreshToken;
-    user.save();
+    await user.save();
 
     res.send({message:"Login successful",user:{username:user.username,email:user.email,accessToken:getAccessToken({email:user.email})}})
 });
