@@ -1,6 +1,6 @@
 const mongoose = require("mongoose")
 
-const userSchema = mongoose.Schema({
+const userSchema = new mongoose.Schema({
     name: { 
         type: String ,
         required: true,
@@ -21,6 +21,9 @@ const userSchema = mongoose.Schema({
     },
     refreshToken:{
         type:String,
+    },
+    rooms:{
+        type:[{roomoid:String,roomid:mongoose.Schema.Types.ObjectId}], //Array of room ids
     }
 })
 

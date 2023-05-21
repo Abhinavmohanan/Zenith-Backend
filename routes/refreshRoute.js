@@ -44,12 +44,13 @@ refreshRoute.post('/',async (req,res)=>{
     }
 
     refreshToken = getRefreshToken({email:user.email});
+    const accessToken = getAccessToken({email:user.email})
 
     user.refreshToken = refreshToken
     await user.save();
 
     res.cookie("refreshToken",refreshToken,{httpOnly:true,expires:new Date(Date.now()+7*24*60*60*1000)})
-    res.send({message:"Refresh successful",user:{username:user.username,email:user.email,accessToken:getAccessToken({email:user.email})}})
+    res.status(200).send({message:"Refresh successful",user:{name:user.name,username:user.username,email:user.email,accessToken:accessToken}})
 })
 
 

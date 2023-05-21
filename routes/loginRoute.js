@@ -32,7 +32,7 @@ loginRoute.post('/',async (req,res)=>{
     user.refreshToken = refreshToken;
     await user.save();
 
-    res.send({message:"Login successful",user:{username:user.username,email:user.email,accessToken:getAccessToken({email:user.email})}})
+    res.send({message:"Login successful",user:{name:user.name,username:user.username,email:user.email,accessToken:getAccessToken({email:user.email})}})
 });
 
 

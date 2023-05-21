@@ -1,23 +1,31 @@
 
 const express = require('express');
 const app = express();
+const server = require('http').createServer(app);
 const dotenv = require("dotenv")
 dotenv.config()
 const mongoose = require("mongoose");
+const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
 app.use(express.json())
 app.use(cookieParser())
+app.use(cors({credentials:true,origin:"http://localhost:3000"})) //This will enable CORS
+
+//Middlewares
+const authHandler = require('./middlewares/authHandler').authHandler;
 
 //Routes
 const loginRoute = require('./routes/loginRoute');
 const registerRoute = require('./routes/registerRoute');
 const refreshRoute = require('./routes/refreshRoute');
 const logoutRoute = require('./routes/logoutRoute');
+const searchRoute = require('./routes/searchRoute');
 
 
-//Middlewares
-const authHandler = require('./middlewares/authHandler');
+
+//Chat Socket
+require('./utils/chatSocket')(server)
 
 
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -39,9 +47,10 @@ app.use('/refreshToken',refreshRoute);
 
 app.use(authHandler) //This middleware will run before every route below it
 
+app.use('/searchUsers',searchRoute)
+
 app.use('/logout',logoutRoute);
-
-
-app.listen(3000, () => {
-    console.log('Server is running on port 3000');
+        
+server.listen(4000, () => {
+    console.log('Server is running on port 4000');
 });
