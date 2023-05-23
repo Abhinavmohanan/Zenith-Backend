@@ -1,4 +1,4 @@
-const { socketAuth } = require("../middlewares/authHandler");
+const socketAuth = require("../middlewares/socketAuthHandler")
 const crypto = require("crypto");
 
 getUniqueId = ()=>{
@@ -13,7 +13,7 @@ const chatSocket = (server)=>{
 
     const io = require('socket.io')(server,{
         cors :{
-            origin:"http://localhost:3000",
+            origin:process.env.FRONT_END_URL,
         }
     })
 
@@ -29,10 +29,10 @@ const chatSocket = (server)=>{
             console.log(socket.user.username +  " Left Socket " + socket.id);
         })
 
-        socket.on('joinRoom',async (to,cb)=>{
-            let newRoom,user2,exisitingRoom;
+        socket.on('addRoom',async (to,addRoom)=>{
+            let newRoom,user2,exisitingRoom,id;
             const user1 = socket.user;
-
+            console.log("Adding Room")
 
             try{
                 user2 = await userModel.findOne({username:to.username})
@@ -42,7 +42,7 @@ const chatSocket = (server)=>{
                 return
             }
             try{
-                exisitingRoom = await roomModel.findOne({type:"private",users:{$all : [user1.username,to.username]}}) 
+                exisitingRoom = await roomModel.findOne({type:"private","users.username":{$all : [user1.username,to.username]}}) 
                 console.log("Exisiting room " + exisitingRoom)
             }
             catch(err){ 
@@ -53,14 +53,15 @@ const chatSocket = (server)=>{
                 socket.join(exisitingRoom.id)
                 console.log("Room exists")
                 console.log("Joined Room " + exisitingRoom.id);
+                addRoom({_id:exisitingRoom._id,id:exisitingRoom.id,type:"private",to:{name:user2.name,username:user2.username}},true)
                 return
             }
             try{
-                const id = getUniqueId()
-                newRoom = roomModel({type:"private",users:[user1.username,user2.username],id:id})
+                id = getUniqueId()
+                newRoom = roomModel({type:"private",users:[{name:user1.name,username:user1.username},{name:user2.name,username:user2.username}],id:id})
             }
             catch(err){
-                console.log(err)
+                console.log("Room Creation Error" + err)
                 return
             }
             try{
@@ -78,6 +79,8 @@ const chatSocket = (server)=>{
 
                 await user1.save()
                 await user2.save()
+
+                addRoom({_id:newRoom._id,id:id,type:"private",to:{name:user2.name,username:user2.username}})
             }
             catch(err){
                 console.log(err)
@@ -85,9 +88,38 @@ const chatSocket = (server)=>{
             }
 
             console.log("Joined Room " + newRoom.id);
-
-            cb("Joined Room " + newRoom.id)
         })
+
+        socket.on('joinRoom',(room)=>{
+            console.log("Joining Rooms")
+            try{
+                socket.join(room)
+            }
+            catch(err){
+                console.log("Error Joining Room" + err)
+            }
+
+            console.log("Joined Rooms :");
+            console.log(socket.rooms)
+        })
+
+        socket.on('sendMessage',async (roomid,message)=>{
+            const user = socket.user;
+            const room = await roomModel.findOne({id:roomid})
+            message.roomid = room._id
+            const newMessage = messageModel(message)
+            try{
+                await newMessage.save()
+                room.messages.push(newMessage._id)
+                await room.save()
+                socket.to(roomid).emit('recieveMessage',message)
+            }
+            catch(err){
+                console.log(err)
+            }
+            console.log("Message Sent")
+        })
+
     })
 
     userIo.on('disconnect',(socket)=>{

@@ -23,7 +23,12 @@ const userSchema = new mongoose.Schema({
         type:String,
     },
     rooms:{
-        type:[{roomoid:String,roomid:mongoose.Schema.Types.ObjectId}], //Array of room ids
+        type:[{roomoid:String,
+            roomid:{
+                type: mongoose.Schema.Types.ObjectId,
+                ref:"Rooms"
+            }//Array of room ids
+            }], 
     }
 })
 

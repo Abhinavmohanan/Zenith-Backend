@@ -8,7 +8,7 @@ const getResfreshToken = require("../utils/getRefreshToken")
 loginRoute.post('/',async (req,res)=>{
     const {email,password} = req.body;
     let isMatch;
-    const user = await UserModel.findOne({email:email})
+    const user = await UserModel.findOne({$or: [{email:email},{username:email}]})
     if(!user){
         res.status(404).send({message:"User not found"})
         return
@@ -30,7 +30,11 @@ loginRoute.post('/',async (req,res)=>{
     res.cookie("refreshToken",refreshToken,{httpOnly:true,expires:new Date(Date.now()+7*24*60*60*1000)})
 
     user.refreshToken = refreshToken;
-    await user.save();
+    try{
+        await user.save();
+    }catch(err){
+        console.log(err)
+    }
 
     res.send({message:"Login successful",user:{name:user.name,username:user.username,email:user.email,accessToken:getAccessToken({email:user.email})}})
 });

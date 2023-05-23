@@ -35,7 +35,7 @@ refreshRoute.post('/',async (req,res)=>{
         res.status(404).send({message:"User not found"})
         return;
     }
-    if(user.refreshToken != refreshToken){
+    if(user.refreshToken !== refreshToken){
         user.refreshToken = null  //Refresh token reuse check
         res.cookie("refreshToken","", {httpOnly:true,expires:new Date(0)})
         await user.save();
@@ -47,7 +47,11 @@ refreshRoute.post('/',async (req,res)=>{
     const accessToken = getAccessToken({email:user.email})
 
     user.refreshToken = refreshToken
-    await user.save();
+    try{
+        await user.save();
+    }catch(err){
+        console.log(err)
+    }
 
     res.cookie("refreshToken",refreshToken,{httpOnly:true,expires:new Date(Date.now()+7*24*60*60*1000)})
     res.status(200).send({message:"Refresh successful",user:{name:user.name,username:user.username,email:user.email,accessToken:accessToken}})

@@ -13,7 +13,7 @@ app.use(cookieParser())
 app.use(cors({credentials:true,origin:"http://localhost:3000"})) //This will enable CORS
 
 //Middlewares
-const authHandler = require('./middlewares/authHandler').authHandler;
+const authHandler = require('./middlewares/authHandler');
 
 //Routes
 const loginRoute = require('./routes/loginRoute');
@@ -21,6 +21,7 @@ const registerRoute = require('./routes/registerRoute');
 const refreshRoute = require('./routes/refreshRoute');
 const logoutRoute = require('./routes/logoutRoute');
 const searchRoute = require('./routes/searchRoute');
+const getRoomsRoute = require('./routes/getRoomsRoute');
 
 
 
@@ -45,11 +46,12 @@ app.use('/refreshToken',refreshRoute);
 
 // Protected Routes
 
-app.use(authHandler) //This middleware will run before every route below it
 
-app.use('/searchUsers',searchRoute)
+app.use('/searchUsers',authHandler,searchRoute)
 
-app.use('/logout',logoutRoute);
+app.use('/getRooms',authHandler,getRoomsRoute)
+
+app.use('/logout',authHandler,logoutRoute);
         
 server.listen(4000, () => {
     console.log('Server is running on port 4000');
