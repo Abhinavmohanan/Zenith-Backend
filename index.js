@@ -23,7 +23,7 @@ const logoutRoute = require('./routes/logoutRoute');
 const searchRoute = require('./routes/searchRoute');
 const getRoomsRoute = require('./routes/getRoomsRoute');
 
-
+const port = process.env.PORT || 4000
 
 //Chat Socket
 require('./utils/chatSocket')(server)
@@ -53,6 +53,6 @@ app.use('/getRooms',authHandler,getRoomsRoute)
 
 app.use('/logout',authHandler,logoutRoute);
         
-server.listen(4000, () => {
+server.listen(port, () => {
     console.log('Server is running on port 4000');
 });
