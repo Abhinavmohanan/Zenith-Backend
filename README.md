@@ -17,9 +17,9 @@ MONGODB_URI=<Mongo DB URI>
 FRONT_END_URL=http://localhost:3000
 ```
 
-Run the backend server:
+Frontend:
 
-https://github.com/Abhinavmohanan/Zenith-Backend
+https://github.com/Abhinavmohanan/Zenith-Chat
 
 Run the server:
 
