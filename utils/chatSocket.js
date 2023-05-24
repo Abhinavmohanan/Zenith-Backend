@@ -25,6 +25,8 @@ const chatSocket = (server)=>{
     userIo.on('connection',(socket)=>{
         console.log(socket.user.username +  " Joined Socket " + socket.id);
 
+        socket.join(socket.user.username);
+
         socket.on('disconnect',()=>{
             console.log(socket.user.username +  " Left Socket " + socket.id);
         })
@@ -80,7 +82,8 @@ const chatSocket = (server)=>{
                 await user1.save()
                 await user2.save()
 
-                addRoom({_id:newRoom._id,id:id,type:"private",to:{name:user2.name,username:user2.username}})
+                addRoom({_id:newRoom._id,id:id,type:"private",to:{name:user2.name,username:user2.username},messages:[]})
+                socket.to(to.username).emit('addRoom',{_id:newRoom._id,id:id,type:"private",to:{name:user1.name,username:user1.username},messages:[]})
             }
             catch(err){
                 console.log(err)
