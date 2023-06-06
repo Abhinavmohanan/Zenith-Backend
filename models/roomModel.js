@@ -14,8 +14,10 @@ const roomSchema = new mongoose.Schema({
             username: String,
         }],
         required:true
+    },
+    lastUpdate:{
+        type:Date,
     }
-        , //Array of user ids
 })
 
 

@@ -60,7 +60,7 @@ const chatSocket = (server)=>{
             }
             try{
                 id = getUniqueId()
-                newRoom = roomModel({type:"private",users:[{name:user1.name,username:user1.username},{name:user2.name,username:user2.username}],id:id})
+                newRoom = roomModel({lastUpdate:new Date(),type:"private",users:[{name:user1.name,username:user1.username},{name:user2.name,username:user2.username}],id:id})
             }
             catch(err){
                 console.log("Room Creation Error" + err)
@@ -76,8 +76,8 @@ const chatSocket = (server)=>{
             }
 
             try{
-                user1.rooms.push({roomoid:newRoom.id,roomid:newRoom._id})
-                user2.rooms.push({roomoid:newRoom.id,roomid:newRoom._id})
+                user1.rooms.push({roomoid:newRoom.id,roomid:newRoom._id,lastUpdate:newRoom.lastUpdate})
+                user2.rooms.push({roomoid:newRoom.id,roomid:newRoom._id,lastUpdate:newRoom.lastUpdate})
 
                 await user1.save()
                 await user2.save()
@@ -114,6 +114,7 @@ const chatSocket = (server)=>{
             try{
                 await newMessage.save()
                 room.messages.push(newMessage._id)
+                room.lastUpdate = new Date()
                 await room.save()
                 socket.to(roomid).emit('recieveMessage',message)
             }

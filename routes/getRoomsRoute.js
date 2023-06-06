@@ -14,7 +14,7 @@ getRoomsRoute.get("/",async(req,res)=>{
             })
         }
         const toUser = users.filter((user)=>{return user.username != req.user.username})[0]
-        return {_id:room.roomid._id,id:room.roomoid,name:room.roomid.name,type:room.roomid.type,to:toUser,messages:room.roomid.messages}
+        return {_id:room.roomid._id,id:room.roomoid,name:room.roomid.name,type:room.roomid.type,to:toUser,messages:room.roomid.messages,updatedAt:room.roomid.lastUpdate}
     })
     res.status(200).send(sendRooms)
 })

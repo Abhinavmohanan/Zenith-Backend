@@ -24,7 +24,7 @@ refreshRoute.post('/',async (req,res)=>{
             const userInfo = jwt.verify(refreshToken,process.env.REFRESH_TOKEN_SECRET,{ignoreExpiration:true});
             const user = await UserModel.findOne({email:userInfo.email})
             user.refreshToken = null 
-            res.cookie("refreshToken","", {httpOnly:true,expires:new Date(0),sameSite: 'none',secure:true,domain:process.env.COOKIE_DOMAIN})
+            res.cookie("refreshToken","", {httpOnly:true,expires:new Date(0),sameSite: 'none',secure:true,domain:process.env.COOKIE_DOMAIN || undefined})
             await user.save();
             res.status(401).send({message:"Refresh Token Expired , Logging out"})
             return;
@@ -37,7 +37,7 @@ refreshRoute.post('/',async (req,res)=>{
     }
     if(user.refreshToken !== refreshToken){
         user.refreshToken = null  //Refresh token reuse check
-        res.cookie("refreshToken","", {httpOnly:true,expires:new Date(0),sameSite: 'none',secure:true,domain:process.env.COOKIE_DOMAIN})
+        res.cookie("refreshToken","", {httpOnly:true,expires:new Date(0),sameSite: 'none',secure:true,domain:process.env.COOKIE_DOMAIN || undefined})
         await user.save();
         res.status(401).send({message:"Invalid Refresh Token , Logging out"})
         return;
@@ -53,7 +53,7 @@ refreshRoute.post('/',async (req,res)=>{
         console.log(err)
     }
 
-    res.cookie("refreshToken",refreshToken,{httpOnly:true,expires:new Date(Date.now()+7*24*60*60*1000),sameSite: 'none',secure:true,domain:process.env.COOKIE_DOMAIN})
+    res.cookie("refreshToken",refreshToken,{httpOnly:true,expires:new Date(Date.now()+7*24*60*60*1000),sameSite: 'none',secure:true,domain:process.env.COOKIE_DOMAIN || undefined})
     res.status(200).send({message:"Refresh successful",user:{name:user.name,username:user.username,email:user.email,accessToken:accessToken}})
 })
 

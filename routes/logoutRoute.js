@@ -6,7 +6,7 @@ logoutRoute.post('/',async(req,res)=>{
     user.refreshToken = null
     try{
         await user.save()
-        res.cookie("refreshToken","", {httpOnly:true,expires:new Date(0),sameSite:'none',secure:true,domain:process.env.COOKIE_DOMAIN})
+        res.cookie("refreshToken","", {httpOnly:true,expires:new Date(0),sameSite:'none',secure:true,domain:process.env.COOKIE_DOMAIN || undefined})
         res.status(200).send({message:"Logout Successful"})
     }
     catch(err){
