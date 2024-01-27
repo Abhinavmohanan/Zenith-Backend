@@ -42,6 +42,10 @@ app.use(function(req, res, next) {
   next();
 });
 
+app.get('/',(req,res)=>{
+        res.send("Server running");
+});
+
 app.use('/login',loginRoute);
 
 app.use('/register',registerRoute);
