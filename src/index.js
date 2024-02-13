@@ -36,7 +36,15 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
         console.error("Failed to connect to MongoDB:", err);
     });
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", process.env.FRONT_END_URL);
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
+app.get('/',(req,res)=>{
+        res.send("Server running");
+});
 
 app.use('/login',loginRoute);
 
