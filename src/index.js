@@ -62,5 +62,5 @@ app.use('/getRooms',authHandler,getRoomsRoute)
 app.use('/logout',authHandler,logoutRoute);
         
 server.listen(port, () => {
-    console.log('Server is running on port 4000');
+    console.log('Server is running on port ${port}');
 });
